@@ -1,0 +1,7 @@
+.clinic
+schema.gql
+.tmp
+./src/graphql.ts
+dist
+.env
+.DS_Store
