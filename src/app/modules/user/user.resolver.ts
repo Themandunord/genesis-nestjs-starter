@@ -49,20 +49,6 @@ export class UserResolver {
     private readonly configService: ConfigService,
   ) {}
 
-  sendRefreshToken(res: Response, token: string) {
-    res.cookie('gid', token, {
-      maxAge:
-        get(
-          this.configService.get('jwt'),
-          'accessToken.options.expiresIn',
-          60 * 60 * 24 * 7,
-        ) * 1000, // convert from minute to milliseconds
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== 'development',
-      // path: '/api/refresh_token',
-    });
-  }
-
   @Mutation(returns => AuthPayload)
   async login(
     @Args() loginArgs: LoginArgs,
@@ -89,7 +75,11 @@ export class UserResolver {
       );
       delete user.password;
       const refreshToken = await this.authService.createRefreshToken(user);
-      this.sendRefreshToken(ctx.res, refreshToken);
+      this.authService.sendRefreshToken(
+        ctx.res,
+        refreshToken,
+        this.configService.get('jwt'),
+      );
       return { token, jwtTokenExpiry, user };
     } catch (e) {
       handleInternalError(e);
@@ -150,7 +140,11 @@ export class UserResolver {
       );
       delete user.password;
       const refreshToken = await this.authService.createRefreshToken(user);
-      this.sendRefreshToken(ctx.res, refreshToken);
+      this.authService.sendRefreshToken(
+        ctx.res,
+        refreshToken,
+        this.configService.get('jwt'),
+      );
       return { token, jwtTokenExpiry, user };
     } catch (error) {
       handleInternalError(error);
@@ -323,7 +317,11 @@ export class UserResolver {
     );
     delete user.password;
     const refreshToken = await this.authService.createRefreshToken(user);
-    this.sendRefreshToken(ctx.res, refreshToken);
+    this.authService.sendRefreshToken(
+      ctx.res,
+      refreshToken,
+      this.configService.get('jwt'),
+    );
     return { token: accessToken, jwtTokenExpiry, user };
   }
 
@@ -363,6 +361,7 @@ export class UserResolver {
     }
     return user;
   }
+
   @Mutation(returns => Boolean)
   async confirm(@Args('token') token: string): Promise<boolean> {
     // send mail with defined transport object

@@ -1,4 +1,3 @@
-
 import { ISendMailOptions, MailerService } from '@nest-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { readFile } from 'fs';
@@ -36,7 +35,9 @@ export class MailService {
   private async renderTemplate(template, context = {}) {
     const templateDir = this.config.get('mailer').templateDir;
     const templatePath = join(
-      __dirname, '..', '..',
+      __dirname,
+      '..',
+      '..',
       templateDir || './public/templates',
       `${template}.html`,
     );
@@ -70,7 +71,8 @@ export class MailService {
     id: string,
   ): Promise<SentMessageInfo | null> {
     try {
-      const token = v4();
+      const buff = new Buffer(v4());
+      const token = buff.toString('base64');
       const url = `${this.config.get('api').confirmUrl()}?token=${token}`;
       const html = await this.renderTemplate('confirm', { url });
       const options = {

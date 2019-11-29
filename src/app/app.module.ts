@@ -1,31 +1,22 @@
-import { Module, Injectable } from '@nestjs/common';
-// import { ExpressSessionMiddleware } from '@nest-middlewares/express-session';
-// import connectRedis from 'connect-redis';
-// import expressSession from 'express-session';
-
-// import { HelmetMiddleware } from '@nest-middlewares/helmet';
-// import { CsurfMiddleware } from '@nest-middlewares/csurf';
-
+// import { AuthModule } from '@modules/auth';
+// import { CommonModule } from '@modules/common';
+// import { NodeModule } from '@modules/node';
+// import { UserModule } from '@modules/user';
+import { Injectable, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
+import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigService } from 'nestjs-config';
+import { ConfigModule, ConfigService } from 'nestjs-config';
 import { RedisModule } from 'nestjs-redis';
-import { ConfigModule } from 'nestjs-config';
 import { resolve } from 'path';
-
+import { MailModule } from './../core/mailer/mailer.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GraphqlOptions } from './graphql.options';
-import { MailModule } from './../core/mailer/mailer.module';
-// import { AuthModule } from './modules/auth/auth.module';
-// import { CommonModule } from './modules/common/common.module';
-// import { UserModule } from './modules/user';
-// import { NodeModule } from './modules/node/node.module';
-
-import { CommonModule } from '@modules/common';
-import { AuthModule } from '@modules/auth';
-import { UserModule } from '@modules/user';
-import { NodeModule } from '@modules/node';
+import { AuthModule } from './modules/auth/auth.module';
+import { CommonModule } from './modules/common/common.module';
+import { NodeModule } from './modules/node/node.module';
+import { UserModule } from './modules/user';
 
 @Module({
   imports: [
@@ -33,6 +24,10 @@ import { NodeModule } from '@modules/node';
     ConfigModule.load(resolve(__dirname, '../config', '**/!(*.d).{ts,js}')),
     GraphQLModule.forRootAsync({
       useClass: GraphqlOptions,
+    }),
+    JwtModule.registerAsync({
+      useFactory: (config: ConfigService) => config.get('jwt').accessToken,
+      inject: [ConfigService],
     }),
     RedisModule.forRootAsync({
       useFactory: (configService: ConfigService) => configService.get('redis'),

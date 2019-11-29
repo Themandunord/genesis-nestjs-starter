@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticationError } from 'apollo-server';
+// import { sign } from 'jsonwebtoken'dd;
+import { Response } from 'express';
+import get from 'lodash.get';
 import { ConfigService } from 'nestjs-config';
 import { USER_ACTIVE_STATUS } from '../../constants';
 import { User } from '../../modules/user/models/user.entity';
 import { UserService } from '../user/user.service';
 import { CryptoService } from './crypto.service';
-// import { sign } from 'jsonwebtoken'dd;
 
 @Injectable()
 export class AuthService {
@@ -74,6 +76,17 @@ export class AuthService {
       this.config.get('jwt').refreshToken.options,
     );
     return refreshToken;
+  }
+
+  public sendRefreshToken(res: Response, token: string, jwtConfig: any) {
+    res.cookie('gid', token, {
+      maxAge:
+        get(jwtConfig, 'accessToken.options.expiresIn', 60 * 60 * 24 * 7) *
+        1000, // convert from minute to milliseconds
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== 'development',
+      // path: '/api/refresh_token',
+    });
   }
 
   public async getAuthUser(token: string): Promise<User | null> {
