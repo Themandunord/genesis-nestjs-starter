@@ -9,7 +9,7 @@ export default {
   refreshToken: {
     secret: process.env.REFRESH_TOKEN_SECRET,
     options: {
-      expiresIn: 60 * 60 * 24 * 7, // 7 days
+      expiresIn: 60 * 60 * 24 * 1, // 1 days
     },
   },
 };

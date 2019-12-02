@@ -63,12 +63,21 @@ export class AuthController {
     );
     delete user.password;
     const refreshToken = await this.authService.createRefreshToken(user);
+    const refreshTokenExpiry = new Date(
+      new Date().getTime() +
+        get(
+          this.config.get('jwt'),
+          'refreshToken.options.expiresIn',
+          60 * 60 * 24 * 1,
+        ) *
+          1000,
+    );
     this.authService.sendRefreshToken(
       res,
       refreshToken,
       this.config.get('jwt'),
     );
-    res.json({ token: accessToken, jwtTokenExpiry, user });
+    res.json({ token: accessToken, jwtTokenExpiry, refreshTokenExpiry, user });
   }
 
   @Get('google')
