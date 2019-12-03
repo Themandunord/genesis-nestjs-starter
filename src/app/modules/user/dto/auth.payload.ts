@@ -7,7 +7,7 @@ export class AuthPayload {
   token: string;
 
   @Field()
-  jwtTokenExpiry: Date;
+  tokenExpiry: Date;
 
   @Field(_ => User, { nullable: false })
   user: User;

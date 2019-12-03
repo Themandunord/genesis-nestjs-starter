@@ -64,7 +64,7 @@ export class UserResolver {
 
     try {
       const token = await this.authService.createToken(user);
-      const jwtTokenExpiry = new Date(
+      const tokenExpiry = new Date(
         new Date().getTime() +
           get(
             this.configService.get('jwt'),
@@ -80,7 +80,7 @@ export class UserResolver {
         refreshToken,
         this.configService.get('jwt'),
       );
-      return { token, jwtTokenExpiry, user };
+      return { token, tokenExpiry, user };
     } catch (e) {
       handleInternalError(e);
     }
@@ -129,7 +129,7 @@ export class UserResolver {
 
     try {
       const token = await this.authService.createToken(user);
-      const jwtTokenExpiry = new Date(
+      const tokenExpiry = new Date(
         new Date().getTime() +
           get(
             this.configService.get('jwt'),
@@ -145,7 +145,7 @@ export class UserResolver {
         refreshToken,
         this.configService.get('jwt'),
       );
-      return { token, jwtTokenExpiry, user };
+      return { token, tokenExpiry, user };
     } catch (error) {
       handleInternalError(error);
     }
@@ -284,15 +284,15 @@ export class UserResolver {
 
   @Mutation(returns => AuthPayload)
   async refreshToken(@Context() ctx): Promise<AuthPayload> {
-    const token = get(ctx, 'req.cookies.gid', null);
-    if (!token) {
+    const gid = get(ctx, 'req.cookies.gid', null);
+    if (!gid) {
       throw new AuthenticationError('Invalid refresh token');
     }
 
     let user: User = null;
     let payload: any = {};
     try {
-      payload = await this.jwtService.verify(token);
+      payload = await this.jwtService.verify(gid);
       user = await this.userService.findOne({ id: payload.id });
     } catch (err) {
       handleInternalError(err);
@@ -305,8 +305,8 @@ export class UserResolver {
       throw new AuthenticationError('Invalid refresh token');
     }
 
-    const accessToken = await this.authService.createToken(user);
-    const jwtTokenExpiry = new Date(
+    const token = await this.authService.createToken(user);
+    const tokenExpiry = new Date(
       new Date().getTime() +
         get(
           this.configService.get('jwt'),
@@ -322,7 +322,7 @@ export class UserResolver {
       refreshToken,
       this.configService.get('jwt'),
     );
-    return { token: accessToken, jwtTokenExpiry, user };
+    return { token, tokenExpiry, user };
   }
 
   @Mutation(returns => User)

@@ -34,15 +34,15 @@ export class AuthController {
 
   @Post('refresh_token')
   async refreshToken(@Request() req, @Response() res) {
-    const token = get(req, 'cookies.gid', null);
-    if (!token) {
+    const gid = get(req, 'cookies.gid', null);
+    if (!gid) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
     let user: User = null;
     let payload: any = {};
     try {
-      payload = await this.jwtService.verify(token);
+      payload = await this.jwtService.verify(gid);
       user = await this.userService.findOne({ id: payload.id });
     } catch (err) {
       throw new InternalServerErrorException(err);
@@ -55,8 +55,8 @@ export class AuthController {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    const accessToken = await this.authService.createToken(user);
-    const jwtTokenExpiry = new Date(
+    const token = await this.authService.createToken(user);
+    const tokenExpiry = new Date(
       new Date().getTime() +
         get(this.config.get('jwt'), 'accessToken.options.expiresIn', 15 * 60) *
           1000,
@@ -77,7 +77,13 @@ export class AuthController {
       refreshToken,
       this.config.get('jwt'),
     );
-    res.json({ token: accessToken, jwtTokenExpiry, refreshTokenExpiry, user });
+    res.json({
+      token,
+      // refreshToken,
+      tokenExpiry,
+      refreshTokenExpiry,
+      user,
+    });
   }
 
   @Get('google')

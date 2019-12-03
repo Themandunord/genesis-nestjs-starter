@@ -81,11 +81,11 @@ export class AuthService {
   public sendRefreshToken(res: Response, token: string, jwtConfig: any) {
     res.cookie('gid', token, {
       maxAge:
-        get(jwtConfig, 'accessToken.options.expiresIn', 60 * 60 * 24 * 7) *
+        get(jwtConfig, 'refreshToken.options.expiresIn', 60 * 60 * 24 * 1) *
         1000, // convert from minute to milliseconds
       httpOnly: true,
       secure: process.env.NODE_ENV !== 'development',
-      // path: '/api/refresh_token',
+      // path: '/auth/refresh_token',
     });
   }
 

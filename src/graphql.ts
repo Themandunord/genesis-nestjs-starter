@@ -21,7 +21,7 @@ export class UserCreateInput {
 
 export class AuthPayload {
   token: string;
-  jwtTokenExpiry: DateTime;
+  tokenExpiry: DateTime;
   user: User;
 }
 
