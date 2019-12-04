@@ -97,10 +97,17 @@ export class AuthController {
   async googleLoginCallback(@Request() req, @Response() res) {
     // handles the Google OAuth2 callback
     const user: any = req.user;
-    const accessToken = await this.authService.createToken(user);
-    req.session.accessToken = accessToken;
-    res.redirect(this.config.get('api').webUrl());
-    // else res.redirect('http://localhost:4200/login/failure');
+    if (user) {
+      const refreshToken = await this.authService.createRefreshToken(user);
+      this.authService.sendRefreshToken(
+        res,
+        refreshToken,
+        this.config.get('jwt'),
+      );
+      res.redirect(this.config.get('api').webUrl());
+    } else {
+      res.redirect(this.config.get('api').webUrl());
+    }
   }
 
   @Get('hasura')

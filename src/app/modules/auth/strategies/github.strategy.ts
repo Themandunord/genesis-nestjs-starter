@@ -1,33 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from 'nestjs-config';
-import { Strategy, Profile } from 'passport-google-oauth20';
+import { Strategy } from 'passport-github';
 import { UserService } from '../../user';
 import { UserCreateInput } from '../../user/dto/user.create.input';
 
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
+export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   constructor(
     private readonly userService: UserService,
     private readonly config: ConfigService,
   ) {
     super({
-      clientID: config.get('social').google.clientID,
-      clientSecret: config.get('social').google.clientSecret,
+      clientID: config.get('social').github.clientID,
+      clientSecret: config.get('social').github.clientSecret,
       callbackURL:
-        config.get('social').google.callback ||
-        'http://localhost:4000/auth/google/callback',
-      passReqToCallback: true,
-      scope: ['profile', 'email'],
+        config.get('social').github.callback ||
+        'http://localhost:4000/auth/github/callback',
     });
   }
 
-  buildCreateUserInput(profile: Profile): UserCreateInput {
+  buildCreateUserInput(profile: any): UserCreateInput {
     const { id, displayName, emails, photos } = profile;
     return {
       email: emails[0].value,
       name: displayName,
-      googleId: id,
+      githubId: id,
       imageUrl: photos[0].value,
       status: 'active',
     };
@@ -37,7 +35,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     request: any,
     accessToken: string,
     refreshToken: string,
-    profile: Profile,
+    profile: any,
     done: (...args) => {},
   ) {
     try {
@@ -50,7 +48,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         );
       }
 
-      done(null, user);
+      done(null, { user, accessToken, refreshToken });
     } catch (err) {
       // console.log(err)
       done(err, false);
