@@ -25,17 +25,17 @@ export class GraphqlOptions implements GqlOptionsFactory {
         req,
         res,
       }),
-      formatError: (error: GraphQLError) => {
-        if (error.originalError instanceof ApolloError) {
-          return error;
-        }
+      // formatError: (error: GraphQLError) => {
+      //   if (error.originalError instanceof ApolloError) {
+      //     return error;
+      //   }
 
-        const errId = v4();
-        console.log('errId: ', errId);
-        console.log(JSON.stringify(error, null, 2));
+      //   const errId = v4();
+      //   console.log('errId: ', errId);
+      //   console.log(JSON.stringify(error, null, 2));
 
-        return new GraphQLError(`Internal Error: ${errId}`);
-      },
+      //   return new GraphQLError(`Internal Error: ${errId}`);
+      // },
       definitions: {
         path: join(process.cwd(), 'src/graphql.ts'),
         outputAs: 'class',

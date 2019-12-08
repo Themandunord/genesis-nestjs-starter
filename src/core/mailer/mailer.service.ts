@@ -71,7 +71,7 @@ export class MailService {
     id: string,
   ): Promise<SentMessageInfo | null> {
     try {
-      const buff = new Buffer(v4());
+      const buff = Buffer.from(v4());
       const token = buff.toString('base64');
       const url = `${this.config.get('api').confirmUrl()}?token=${token}`;
       const html = await this.renderTemplate('confirm', { url });

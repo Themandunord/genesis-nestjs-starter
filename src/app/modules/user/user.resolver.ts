@@ -27,15 +27,15 @@ import { UserCreateInput } from './dto/user.create.input';
 import { User } from './models/user.entity';
 import { UserService } from './user.service';
 
-const handleInternalError = error => {
-  if (error instanceof ApolloError) {
-    throw error;
-  }
-  const errId = v4();
-  console.log('errId: ', errId);
-  console.log(error);
-  throw new GraphQLError(`Internal Error: ${errId}`);
-};
+// const handleInternalError = error => {
+//   if (error instanceof ApolloError) {
+//     throw error;
+//   }
+//   const errId = v4();
+//   console.log('errId: ', errId);
+//   console.log(error);
+//   throw new GraphQLError(`Internal Error: ${errId}`);
+// };
 
 @Resolver(of => User)
 export class UserResolver {
@@ -62,48 +62,48 @@ export class UserResolver {
       });
     }
 
-    try {
-      const token = await this.authService.createToken(user);
-      const tokenExpiry = new Date(
-        new Date().getTime() +
-          get(
-            this.configService.get('jwt'),
-            'accessToken.options.expiresIn',
-            15 * 60,
-          ) *
-            1000,
-      );
-      delete user.password;
-      const refreshToken = await this.authService.createRefreshToken(user);
-      this.authService.sendRefreshToken(
-        ctx.res,
-        refreshToken,
-        this.configService.get('jwt'),
-      );
-      return { token, tokenExpiry, user };
-    } catch (e) {
-      handleInternalError(e);
-    }
+    // try {
+    const token = await this.authService.createToken(user);
+    const tokenExpiry = new Date(
+      new Date().getTime() +
+        get(
+          this.configService.get('jwt'),
+          'accessToken.options.expiresIn',
+          15 * 60,
+        ) *
+          1000,
+    );
+    delete user.password;
+    const refreshToken = await this.authService.createRefreshToken(user);
+    this.authService.sendRefreshToken(
+      ctx.res,
+      refreshToken,
+      this.configService.get('jwt'),
+    );
+    return { token, tokenExpiry, user };
+    // } catch (e) {
+    //   handleInternalError(e);
+    // }
   }
 
   @Mutation(returns => Boolean)
   async sendLoginOTP(@Args('email') email: string): Promise<boolean> {
     // send mail with defined transport object
-    try {
-      const user: User = await this.userService.findOne({ email });
-      if (!user) {
-        return false;
-      }
-      const info = this.mailService.sendOTPEmail(
-        email,
-        user.id,
-        'Login OTP for Genesis',
-      );
-      return info !== null;
-    } catch (error) {
-      handleInternalError(error);
+    // try {
+    const user: User = await this.userService.findOne({ email });
+    if (!user) {
+      return false;
     }
-    return false;
+    const info = this.mailService.sendOTPEmail(
+      email,
+      user.id,
+      'Login OTP for Genesis',
+    );
+    return info !== null;
+    // } catch (error) {
+    //   handleInternalError(error);
+    // }
+    // return false;
   }
 
   @Mutation(returns => AuthPayload)
@@ -127,28 +127,28 @@ export class UserResolver {
       });
     }
 
-    try {
-      const token = await this.authService.createToken(user);
-      const tokenExpiry = new Date(
-        new Date().getTime() +
-          get(
-            this.configService.get('jwt'),
-            'accessToken.options.expiresIn',
-            15 * 60,
-          ) *
-            1000,
-      );
-      delete user.password;
-      const refreshToken = await this.authService.createRefreshToken(user);
-      this.authService.sendRefreshToken(
-        ctx.res,
-        refreshToken,
-        this.configService.get('jwt'),
-      );
-      return { token, tokenExpiry, user };
-    } catch (error) {
-      handleInternalError(error);
-    }
+    // try {
+    const token = await this.authService.createToken(user);
+    const tokenExpiry = new Date(
+      new Date().getTime() +
+        get(
+          this.configService.get('jwt'),
+          'accessToken.options.expiresIn',
+          15 * 60,
+        ) *
+          1000,
+    );
+    delete user.password;
+    const refreshToken = await this.authService.createRefreshToken(user);
+    this.authService.sendRefreshToken(
+      ctx.res,
+      refreshToken,
+      this.configService.get('jwt'),
+    );
+    return { token, tokenExpiry, user };
+    // } catch (error) {
+    //   handleInternalError(error);
+    // }
   }
 
   @Query(returns => User)
@@ -157,7 +157,6 @@ export class UserResolver {
     try {
       return get(ctx, 'req.user', null);
     } catch (e) {
-      console.error(e);
       throw new UnauthorizedException();
     }
   }
@@ -175,7 +174,6 @@ export class UserResolver {
         return true;
       }
     } catch (e) {
-      console.error(e);
       throw new UnauthorizedException();
     }
     return false;
@@ -184,34 +182,34 @@ export class UserResolver {
   @Mutation(returns => Boolean)
   @UseGuards(GqlAuthGuard)
   async logout(@Context() ctx) {
-    try {
-      ctx.res.cookie('gid', '', {
-        httpOnly: true,
-        expires: new Date(0),
-      });
-      return true;
-    } catch (error) {
-      handleInternalError(error);
-    }
+    // try {
+    ctx.res.cookie('gid', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+    return true;
+    // } catch (error) {
+    //   handleInternalError(error);
+    // }
   }
 
   @Mutation(returns => Boolean)
   async forgotPassword(@Args('email') email: string): Promise<boolean> {
     // send mail with defined transport object
-    try {
-      const user: User = await this.userService.findOne({ email });
-      if (!user) {
-        return false;
-      }
-      const result = await this.mailService.sendForgotPasswordEmail(
-        email,
-        user.id,
-      );
-      return result !== null;
-    } catch (error) {
-      handleInternalError(error);
+    // try {
+    const user: User = await this.userService.findOne({ email });
+    if (!user) {
+      return false;
     }
-    return true;
+    const result = await this.mailService.sendForgotPasswordEmail(
+      email,
+      user.id,
+    );
+    return result !== null;
+    // } catch (error) {
+    //   handleInternalError(error);
+    // }
+    // return true;
   }
 
   @Mutation(returns => Boolean)
@@ -224,14 +222,14 @@ export class UserResolver {
     if (user) {
       const { password, currentPassword } = changePasswordArgs;
       let validUser: User = null;
-      try {
-        validUser = await this.authService.validateUser(
-          user.email,
-          currentPassword,
-        );
-      } catch (error) {
-        handleInternalError(error);
-      }
+      // try {
+      validUser = await this.authService.validateUser(
+        user.email,
+        currentPassword,
+      );
+      // } catch (error) {
+      //   handleInternalError(error);
+      // }
       if (validUser) {
         const newPassword = await this.userService.encrypt(password);
         await this.userService.update(
@@ -249,37 +247,36 @@ export class UserResolver {
         );
       }
     } else {
-      console.log(user);
       throw new UnauthorizedException();
     }
   }
 
   @Mutation(returns => Boolean)
   async resetPassword(@Args() resetPasswordArgs: ResetPasswordArgs) {
-    try {
-      const { password, token } = resetPasswordArgs;
-      const key = REDIS_FORGOT_PASSWORD_TOKEN_PREFIX + token;
-      const redis = this.redisService.getClient();
-      const id = await redis.get(key);
+    // try {
+    const { password, token } = resetPasswordArgs;
+    const key = REDIS_FORGOT_PASSWORD_TOKEN_PREFIX + token;
+    const redis = this.redisService.getClient();
+    const id = await redis.get(key);
 
-      if (!id) {
-        return null;
-      }
-
-      const newPassword = await this.userService.encrypt(password);
-      await this.userService.update(
-        {
-          password: newPassword,
-        },
-        {
-          id,
-        },
-      );
-      await redis.del(key);
-      return true;
-    } catch (error) {
-      handleInternalError(error);
+    if (!id) {
+      return null;
     }
+
+    const newPassword = await this.userService.encrypt(password);
+    await this.userService.update(
+      {
+        password: newPassword,
+      },
+      {
+        id,
+      },
+    );
+    await redis.del(key);
+    return true;
+    // } catch (error) {
+    //   handleInternalError(error);
+    // }
   }
 
   @Mutation(returns => AuthPayload)
@@ -291,12 +288,12 @@ export class UserResolver {
 
     let user: User = null;
     let payload: any = {};
-    try {
-      payload = await this.jwtService.verify(gid);
-      user = await this.userService.findOne({ id: payload.id });
-    } catch (err) {
-      handleInternalError(err);
-    }
+    // try {
+    payload = await this.jwtService.verify(gid);
+    user = await this.userService.findOne({ id: payload.id });
+    // } catch (err) {
+    //   handleInternalError(err);
+    // }
     if (!user) {
       throw new AuthenticationError('Invalid refresh token');
     }
@@ -354,57 +351,54 @@ export class UserResolver {
       username,
       password,
     });
-    try {
-      await this.mailService.sendConfirmationEmail(user.email, user.id);
-    } catch (error) {
-      handleInternalError(error);
-    }
+    // try {
+    await this.mailService.sendConfirmationEmail(user.email, user.id);
+    // } catch (error) {
+    //   handleInternalError(error);
+    // }
     return user;
   }
 
   @Mutation(returns => Boolean)
   async confirm(@Args('token') token: string): Promise<boolean> {
     // send mail with defined transport object
-    try {
-      const redis = this.redisService.getClient();
-      const key = REDIS_CONFIRM_TOKEN_PREFIX + token;
-      const id = await redis.get(key);
+    // try {
+    const redis = this.redisService.getClient();
+    const key = REDIS_CONFIRM_TOKEN_PREFIX + token;
+    const id = await redis.get(key);
 
-      if (!id) {
-        return false;
-      }
-
-      await this.userService.update(
-        {
-          status: USER_ACTIVE_STATUS,
-        },
-        {
-          id,
-        },
-      );
-      await redis.del(key);
-      return true;
-    } catch (error) {
-      handleInternalError(error);
+    if (!id) {
+      return false;
     }
+
+    await this.userService.update(
+      {
+        status: USER_ACTIVE_STATUS,
+      },
+      {
+        id,
+      },
+    );
+    await redis.del(key);
+    return true;
+    // } catch (error) {
+    //   handleInternalError(error);
+    // }
   }
 
   @Mutation(returns => Boolean)
   async resendConfirm(@Args('email') email: string): Promise<boolean> {
     // send mail with defined transport object
-    try {
-      const user: User = await this.userService.findOne({ email });
-      if (!user) {
-        return false;
-      }
-      const result = await this.mailService.sendConfirmationEmail(
-        email,
-        user.id,
-      );
-      return result !== null;
-    } catch (error) {
-      handleInternalError(error);
+    // try {
+    const user: User = await this.userService.findOne({ email });
+    if (!user) {
+      return false;
     }
+    const result = await this.mailService.sendConfirmationEmail(email, user.id);
+    return result !== null;
+    // } catch (error) {
+    //   handleInternalError(error);
+    // }
     return true;
   }
 }
