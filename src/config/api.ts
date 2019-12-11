@@ -23,9 +23,9 @@ export default {
     return `${this.get('api').protocol()}://${this.get('api.host')}`;
   },
   confirmUrl() {
-    return `${this.get('api').apiUrl()}${this.get('api.confirmPath')}`;
+    return `${this.get('api').webUrl()}${this.get('api.confirmPath')}`;
   },
   forgetUrl() {
-    return `${this.get('api').apiUrl()}${this.get('api.forgetPath')}`;
+    return `${this.get('api').webUrl()}${this.get('api.forgetPath')}`;
   },
 };

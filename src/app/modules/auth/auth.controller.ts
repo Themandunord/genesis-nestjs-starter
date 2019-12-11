@@ -77,6 +77,8 @@ export class AuthController {
       refreshToken,
       this.config.get('jwt'),
     );
+    delete user.tokenVersion;
+
     res.json({
       token,
       // refreshToken,
