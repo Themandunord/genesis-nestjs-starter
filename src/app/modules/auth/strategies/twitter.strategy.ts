@@ -43,9 +43,11 @@ export class TwitterStrategy extends PassportStrategy(Strategy, 'twitter') {
         twitterId: profile.id,
       });
       if (!user) {
-        user = await this.userService.create(
-          this.buildCreateUserInput(profile),
-        );
+        const createUserInput = this.buildCreateUserInput(profile);
+        user = await this.userService.findOne({ email: createUserInput.email });
+        if (!user) {
+          user = await this.userService.create(createUserInput);
+        }
       }
 
       done(null, { user, accessToken, refreshToken });

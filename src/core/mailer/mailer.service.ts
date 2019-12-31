@@ -96,7 +96,8 @@ export class MailService {
     id: string,
   ): Promise<SentMessageInfo | null> {
     try {
-      const token = v4();
+      const buff = Buffer.from(v4());
+      const token = buff.toString('base64');
       const url = `${this.config.get('api').forgetUrl()}?token=${token}`;
       const html = await this.renderTemplate('forgot', { url });
       const options = {
