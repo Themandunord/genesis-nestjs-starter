@@ -1,14 +1,10 @@
-import { UnauthorizedException, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
-import { AuthenticationError, UserInputError } from 'apollo-server';
-import { ApolloError } from 'apollo-server-express';
-import { Response } from 'express';
-import { GraphQLError } from 'graphql';
+import { AuthenticationError } from 'apollo-server';
 import get from 'lodash.get';
 import { ConfigService } from 'nestjs-config';
 import { RedisService } from 'nestjs-redis';
-import { v4 } from 'uuid';
 import { MailService } from '../../../core/mailer';
 import { AppService } from '../../app.service';
 import {
@@ -18,6 +14,7 @@ import {
   USER_ACTIVE_STATUS,
 } from '../../constants';
 import { AuthService } from '../auth/auth.service';
+import { USER_ACTIVE_VERIFICATION } from './../../constants';
 import { GqlAuthGuard } from './../auth/guards/graphql-auth.guard';
 import { AuthPayload } from './dto/auth.payload';
 import { ChangePasswordArgs } from './dto/change.password.args';
@@ -51,6 +48,14 @@ export class UserResolver {
     }
 
     try {
+      await this.userService.update(
+        {
+          lastLoginAt: new Date(),
+        },
+        {
+          id: user.id,
+        },
+      );
       const token = await this.authService.createToken(user);
       const tokenExpiry = new Date(
         new Date().getTime() +
@@ -114,6 +119,14 @@ export class UserResolver {
     }
 
     try {
+      await this.userService.update(
+        {
+          lastLoginAt: new Date(),
+        },
+        {
+          id: user.id,
+        },
+      );
       const token = await this.authService.createToken(user);
       const tokenExpiry = new Date(
         new Date().getTime() +
@@ -317,6 +330,13 @@ export class UserResolver {
       errors.password = `Password must be at least 6 characters`;
     }
 
+    let user = await this.userService.findOne({ email });
+
+    if (user && user.status === USER_ACTIVE_VERIFICATION) {
+      // await this.mailService.sendConfirmationEmail(user.email, user.id);
+      return user;
+    }
+
     const emailExists = await this.userService.exists({ email });
     if (emailExists) {
       const message = `Email ${email} is already in use`;
@@ -331,13 +351,13 @@ export class UserResolver {
       }
     }
 
-    const user = await this.userService.create({
-      email,
-      name,
-      username,
-      password,
-    });
     try {
+      user = await this.userService.create({
+        email,
+        name,
+        username,
+        password,
+      });
       await this.mailService.sendConfirmationEmail(user.email, user.id);
     } catch (error) {
       this.appService.thorwInternalError(error);
