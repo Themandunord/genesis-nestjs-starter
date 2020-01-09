@@ -49,7 +49,7 @@ export class AuthService {
       tokenVersion: user.tokenVersion,
       iat,
       'https://hasura.io/jwt/claims': {
-        'x-hasura-allowed-roles': [],
+        'x-hasura-allowed-roles': [user.role],
         'x-hasura-default-role': user.role,
         'x-hasura-user-id': user.id,
         // 'x-hasura-org-id': '123',
