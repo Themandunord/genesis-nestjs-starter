@@ -80,6 +80,13 @@ export class User extends BaseEntity {
   @Field(_ => String, { nullable: true })
   @Column('text', {
     nullable: true,
+    name: 'bio',
+  })
+  bio?: string | null;
+
+  @Field(_ => String, { nullable: true })
+  @Column('text', {
+    nullable: true,
     unique: true,
     name: 'google_id',
   })
