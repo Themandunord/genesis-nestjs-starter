@@ -78,7 +78,7 @@ export class User {
     username?: string;
     email: string;
     phone?: string;
-    bio?: string;
+    bio?: JSON;
     googleId?: string;
     facebookId?: string;
     twitterId?: string;
@@ -93,3 +93,4 @@ export class User {
 }
 
 export type DateTime = any;
+export type JSON = any;
