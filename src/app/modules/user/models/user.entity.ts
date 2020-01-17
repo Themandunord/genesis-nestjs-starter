@@ -12,21 +12,22 @@ import {
 } from 'typeorm';
 
 @ObjectType()
-@Entity('user', { schema: 'public' })
-@Index('user_email_key', ['email'], { unique: true })
 @Index('UQ_b7a5e4a3b174e954b2dabf2ef9e', ['email'], { unique: true })
+@Index('user_email_key', ['email'], { unique: true })
 @Index('user_facebookId_key', ['facebookId'], { unique: true })
 @Index('UQ_89635bfc77b8768544d5c82a7c4', ['facebookId'], { unique: true })
-@Index('UQ_7dfc7794e80610b83c5cf5d8348', ['githubId'], { unique: true })
 @Index('user_githubId_key', ['githubId'], { unique: true })
-@Index('UQ_7c9f5f0d759b84373b901768d4d', ['googleId'], { unique: true })
+@Index('UQ_7dfc7794e80610b83c5cf5d8348', ['githubId'], { unique: true })
 @Index('user_googleId_key', ['googleId'], { unique: true })
-@Index('UQ_99acedb51629efbe55bcad471bb', ['phone'], { unique: true })
+@Index('UQ_7c9f5f0d759b84373b901768d4d', ['googleId'], { unique: true })
+@Index('PK_03b91d2b8321aa7ba32257dc321', ['id'], { unique: true })
 @Index('user_phone_key', ['phone'], { unique: true })
-@Index('UQ_cf64c24776ea5db1f17d345c399', ['twitterId'], { unique: true })
+@Index('UQ_99acedb51629efbe55bcad471bb', ['phone'], { unique: true })
 @Index('user_twitterId_key', ['twitterId'], { unique: true })
+@Index('UQ_cf64c24776ea5db1f17d345c399', ['twitterId'], { unique: true })
 @Index('user_username_key', ['username'], { unique: true })
 @Index('UQ_b67337b7f8aa8406e936c2ff754', ['username'], { unique: true })
+@Entity('user', { schema: 'public' })
 export class User extends BaseEntity {
   @Field(_ => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -76,13 +77,6 @@ export class User extends BaseEntity {
     default: () => 'jsonb_build_object()',
   })
   bio: object | null;
-
-  @Field(_ => String, { nullable: true })
-  @Column('text', {
-    nullable: true,
-    name: 'bio',
-  })
-  bio?: string | null;
 
   @Field(_ => String, { nullable: true })
   @Column('text', {
