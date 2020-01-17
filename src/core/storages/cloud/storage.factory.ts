@@ -1,7 +1,8 @@
 import { FtpStorageAdapter } from './adapters/ftp.storage.adapter';
 import { AwsStorageAdapter } from './adapters/aws.storage.adapter';
 import { IUploadImage } from '../interfaces/upload.image.interface';
-import config, { TYPE_STORAGE } from '../../../config/storage';
+import config from '../../../config/storage';
+import { TYPE_STORAGE } from '../interfaces/storage.type.enum';
 
 export class StorageFactory {
   static createStorageFromType(type: string): IUploadImage {

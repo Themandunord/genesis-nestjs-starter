@@ -1,4 +1,6 @@
 import { Field, ID, ObjectType } from 'type-graphql';
+import GraphQLJSON from 'graphql-type-json';
+
 import {
   BaseEntity,
   Column,
@@ -66,6 +68,14 @@ export class User extends BaseEntity {
     name: 'phone',
   })
   phone?: string | null;
+
+  @Field(_ => GraphQLJSON, { nullable: true })
+  @Column('jsonb', {
+    name: 'bio',
+    nullable: true,
+    default: () => 'jsonb_build_object()',
+  })
+  bio: object | null;
 
   @Field(_ => String, { nullable: true })
   @Column('text', {

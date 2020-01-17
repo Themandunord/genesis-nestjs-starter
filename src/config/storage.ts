@@ -1,9 +1,4 @@
 
-export const enum TYPE_STORAGE {
-  AWS = 'AWS',
-  FTP = 'FTP',
-}
-
 export default {
   TYPE_STORAGE_IMAGE: process.env.TYPE_STORAGE,
   ALLOW_AVATAR_FILE: ['image/png', 'image/jpeg'],
@@ -13,7 +8,7 @@ export default {
     basepath: process.env.FTP_STORAGE_BASE_PATH,
     ftp: {
       host: process.env.FTP_STORAGE_HOST,
-      secure: JSON.parse(process.env.FTP_STORAGE_SECURE),
+      secure: process.env.FTP_STORAGE_SECURE,
       user: process.env.FTP_STORAGE_USER,
       password: process.env.FTP_STORAGE_PASSWORD,
     },
@@ -25,8 +20,8 @@ export default {
     AWS_ENDPOINT: process.env.AWS_ENDPOINT,
     AWS_BUCKET: process.env.AWS_BUCKET,
     AWS_ACL: process.env.AWS_ACL,
-    AWS_S3_FORCE_PATH_STYLE: JSON.parse(process.env.AWS_S3_FORCE_PATH_STYLE),
-    AWS_S3_BUCKET_ENDPOINT: JSON.parse(process.env.AWS_S3_BUCKET_ENDPOINT),
+    AWS_S3_FORCE_PATH_STYLE: process.env.AWS_S3_FORCE_PATH_STYLE === 'true',
+    AWS_S3_BUCKET_ENDPOINT: process.env.AWS_S3_BUCKET_ENDPOINT  === 'true',
   },
 
   AVATAR_URL: process.env.AVATAR_URL,
